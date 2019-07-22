@@ -54,6 +54,10 @@ EXTRAPDF   := teacher
 .PHONY: buildAll
 buildAll: $(basename $(wildcard *.xml)) $(basename $(wildcard *.tex))
 
+.PHONY: clean
+clean:
+	rm -fr "$(OUTDIR)" "$(TEXBUILDDIR)"
+
 
 #
 # prepare $(OUTDIR)
@@ -129,7 +133,7 @@ TeXBuildDir: $(TEXBUILDDIR)/pdfBooklets.cls $(TEXBUILDDIR)/LaTeX-demos-examples.
 
 # build XHTML from XML
 $(OUTDIR)/%.xhtml: %.xml  $(patsubst %,OutDir,$(FORCE)) | OutDir
-	rm -f "$@"
+	rm -f "$(basename $@).pdf" "$@"
 	xml2xhtml.py "$<" "$@"
 	chmod 444 "$@"
 
