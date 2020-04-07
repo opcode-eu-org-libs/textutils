@@ -13,6 +13,16 @@ Some of the tools in this repo:
   convert LaTeX equations to MathML, include and prepare for hightligt source codes files and generate table of contents)
 * [add_md5_to_pdf.sh](misc/add_md5_to_pdf.sh) – add overlay md5sum and source filename info to pdf file (for printing)
 
+## Install
+
+To install run:
+
+	sudo make installDependencies
+	sudo make installTools
+	make installLibs
+
+More info: `make halep`
+
 
 ## License
 

@@ -46,6 +46,10 @@ IMGSRC4XML := images-src4web
 IMGSRC4TEX := images-src4tex
 EXTRAPDF   := teacher
 
+# add converting scripts from TextUtils to PATH
+TEXTUTILS  := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
+export PATH := $(TEXTUTILS)/convert:$(PATH)
+
 
 #
 # buils all .xml and .tex files in current dir by default
