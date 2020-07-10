@@ -3,7 +3,7 @@
 #  * convert .xml to XHTML files
 #  * create PDF files from LaTeX or XHTML files
 
-# Copyright (c) 2019 Robert Ryszard Paciorek <rrp@opcode.eu.org>
+# Copyright (c) 2019-2020 Robert Ryszard Paciorek <rrp@opcode.eu.org>
 # 
 # MIT License
 # 
@@ -42,8 +42,7 @@
 
 LIBFILES   := base.css menu.css index.css menu.js opcode.svg webSite-OldOpCode.svg
 SVGICONS   := gitRepo.svg htmlFile.svg pdfFile.svg webSite.svg
-IMGSRC4XML := images-src4web
-IMGSRC4TEX := images-src4tex
+IMGSRC     := images-src
 EXTRAPDF   := teacher
 
 # add converting scripts from TextUtils to PATH
@@ -64,10 +63,21 @@ clean:
 
 
 #
-# prepare $(OUTDIR)
+# macros to add dependencies from files in $(IMGSRC)
 #
 
-XMLIMGSRC := $(wildcard $(IMGSRC4XML)/*.sch) $(wildcard $(IMGSRC4XML)/*/*.sch)
+img4xml_from_src = $(patsubst $(IMGSRC)/%,$(OUTDIR)/img/%,$(addsuffix .svg,$(basename $(wildcard $(IMGSRC)/$(1)))))
+img4tex_from_src = $(patsubst $(IMGSRC)/%,$(TEXBUILDDIR)/img/%,$(addsuffix .pdf,$(basename $(wildcard $(IMGSRC)/$(1)))))
+# usage: $(call img4tex_from_src,GLOB_IN_IMGSRC_DIR)
+#
+# 1. get list of path to all files in $(IMGSRC) matching to GLOB_IN_IMGSRC_DIR (via wildcard)
+# 2. replace filename extension by .pdf (via basename and addsuffix)
+# 3. replace $(IMGSRC) by OUTPUT_OR_BUILD_DIR/img (via patsubst)
+
+
+#
+# prepare $(OUTDIR)
+#
 
 # generate highlight.css
 $(OUTDIR)/lib/highlight.css:
@@ -89,13 +99,13 @@ $(OUTDIR)/lib/%:
 	ln -sf `realpath "$(LIBFILESDIR)/$(@F)"` "$@"
 
 # generate .svg from gEDA .sch
-$(OUTDIR)/img/%.svg: $(IMGSRC4XML)/%.sch
+$(OUTDIR)/img/%.svg: $(IMGSRC)/%.sch
 	mkdir -p "$(@D)"
 	cd "$(@D)"; sch2svg "$(PWD)/$<"
 
 # prepare $(OUTDIR) and link files from extra-web-files to $(OUTDIR)
 .PHONY: OutDir
-OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS)) $(addprefix $(OUTDIR)/img/, $(addsuffix .svg, $(basename $(XMLIMGSRC:$(IMGSRC4XML)/%=%))))
+OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS))
 	if [ -d extra-web-files ]; then \
 		for f in extra-web-files/*; do \
 			if [ -e "$$f" ]; then ln -sf `realpath "$$f"` $(OUTDIR); fi; \
@@ -107,21 +117,25 @@ OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS)) $(add
 # prepare $(TEXBUILDDIR)
 #
 
-TEXIMGSRC := $(wildcard $(IMGSRC4TEX)/*.sch) $(wildcard $(IMGSRC4TEX)/*/*.sch)
-
 # link .tex and .cls „lib” files from $(LIBFILESDIR) to $(TEXBUILDDIR)
 $(TEXBUILDDIR)/%.tex $(TEXBUILDDIR)/%.cls:
 	mkdir -p $(TEXBUILDDIR)
 	ln -sf `realpath "$(LIBFILESDIR)/$(@F)"` "$@"
 
 # generate .pdf from gEDA .sch
-$(TEXBUILDDIR)/img/%.pdf: $(IMGSRC4TEX)/%.sch
+$(TEXBUILDDIR)/img/%.pdf: $(IMGSRC)/%.sch
 	mkdir -p "$(@D)"
 	cd "$(@D)"; sch2pdf "$(PWD)/$<"
 
+# generate .pdf from .svg
+$(TEXBUILDDIR)/img/%.pdf: $(IMGSRC)/%.svg
+	mkdir -p "$(@D)"
+	inkscape $^ --export-pdf=$@
+
 # prepare $(TEXBUILDDIR) and link files from extra-tex-files to $(TEXBUILDDIR)
 .PHONY: TeXBuildDir
-TeXBuildDir: $(TEXBUILDDIR)/pdfBooklets.cls $(TEXBUILDDIR)/LaTeX-demos-examples.tex $(addprefix $(TEXBUILDDIR)/img/, $(addsuffix .pdf, $(basename $(TEXIMGSRC:$(IMGSRC4TEX)/%=%))))
+TeXBuildDir: $(TEXBUILDDIR)/pdfBooklets.cls $(TEXBUILDDIR)/LaTeX-demos-examples.tex
+	mkdir -p $(OUTDIR)
 	if [ -d extra-tex-files ]; then \
 		for f in extra-tex-files/*; do \
 			if [ -e "$$f" ]; then ln -sf `realpath "$$f"` $(TEXBUILDDIR); fi; \
