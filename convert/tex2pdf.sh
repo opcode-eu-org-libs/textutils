@@ -32,9 +32,9 @@
 set -e
 
 buildTex() {
-	inputName=$1; shift
+	inputPath=$1; inputName=$2; shift 2
 	md5sum "$inputName.aux" "$inputName.out" > "$inputName.md5" 2> /dev/null || true
-	lualatex --halt-on-error  "$@" "$inputName.tex"
+	lualatex --halt-on-error  "$@" "$inputPath/$inputName.tex"
 }
 
 # args ...
@@ -43,14 +43,16 @@ if [ $# -lt 1 ]; then
 	exit 1
 fi
 
-inputName=${1%.tex}; shift
+inputPath=`dirname  $1`
+inputName=`basename $1 .tex`
+shift
 
 # first build
-buildTex "$inputName" "$@"; i=1
+buildTex "$inputPath" "$inputName" "$@"; i=1
 
 # rebuild until build changes .aux or .out files
 while ! md5sum -c "$inputName.md5" >& /dev/null; do
-	buildTex "$inputName" "$@"
+	buildTex "$inputPath" "$inputName" "$@"
 	let i++
 	if [ $i -gt 4 ]; then
 		echo "exceeded maximum number of lualatex iteration ... break" > /dev/stderr
