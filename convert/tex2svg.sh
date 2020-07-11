@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# build tex file (with lualatex) until no changes in .out and .aux file
+# build image from tex file (with tex2pdf.sh) and convert pdf to svg
 
 # script dependencies:
-#  - md5sum  (coreutils package)
-#  - lualatex (texlive-latex-base texlive-luatex texlive-latex-recommended packages)
+#  - inkscape
+#  - tex2pdf.sh (and its dependencies:)
 
 
-# Copyright (c) 2019-2020 Robert Ryszard Paciorek <rrp@opcode.eu.org>
+# Copyright (c) 2020 Robert Ryszard Paciorek <rrp@opcode.eu.org>
 # 
 # MIT License
 # 
@@ -31,34 +31,10 @@
 
 set -e
 
-buildTex() {
-	inputPath=$1; inputName=$2; shift 2
-	md5sum "$inputName.aux" "$inputName.out" > "$inputName.md5" 2> /dev/null || true
-	lualatex --halt-on-error  "$@" "$inputPath/$inputName.tex"
-}
-
-# args ...
-if [ $# -lt 1 ]; then
-	echo "USAGE: $0 fileName.tex [extra args for lualatex, eg. -shell-escape]" > /dev/stderr
-	exit 1
-fi
-
-inputPath=`dirname  $1`
+inputPath=$1
 inputName=`basename $1 .tex`
 shift
 
-# first build
-buildTex "$inputPath" "$inputName" "$@"; i=1
-
-# rebuild until build changes .aux or .out files
-while ! md5sum -c "$inputName.md5" >& /dev/null; do
-	buildTex "$inputPath" "$inputName" "$@"
-	let i++
-	if [ $i -gt 4 ]; then
-		echo "exceeded maximum number of lualatex iteration ... break" > /dev/stderr
-		exit 2
-	fi
-done;
-
-echo "we need $i iteration to build $inputName"
-exit 0
+tex2pdf.sh "$inputPath" $@
+inkscape --without-gui --file=$inputName.pdf --export-plain-svg="$inputName.svg"
+inkscape --verb=FitCanvasToDrawing --verb=FileSave --verb=FileQuit "$inputName.svg"

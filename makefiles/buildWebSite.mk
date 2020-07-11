@@ -103,6 +103,13 @@ $(OUTDIR)/img/%.svg: $(IMGSRC)/%.sch
 	mkdir -p "$(@D)"
 	cd "$(@D)"; sch2svg "$(PWD)/$<"
 
+# generate .svg from .tex
+$(OUTDIR)/img/%.svg: $(IMGSRC)/%.tex | TeXBuildDir
+	$(eval FILEPATH := $(patsubst %$(<F),%,$(patsubst $(IMGSRC)/%,%,$(<))))
+	mkdir -p "$(TEXBUILDDIR)/$(FILEPATH)"
+	mkdir -p "$(@D)"
+	cd "$(TEXBUILDDIR)/$(FILEPATH)" && tex2svg.sh "$(PWD)/$<" "-shell-escape" && mv "$(@F)" "$@"
+
 # prepare $(OUTDIR) and link files from extra-web-files to $(OUTDIR)
 .PHONY: OutDir
 OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS))
