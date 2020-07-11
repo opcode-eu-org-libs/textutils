@@ -176,7 +176,8 @@ $(OUTDIR)/%.pdf: %.tex $(patsubst %,TeXBuildDir,$(FORCE)) | TeXBuildDir
 	mv "$(TEXBUILDDIR)/$(@F)" "$@"
 
 # build alternative versions of PDF from LaTeX
-$(addprefix $(OUTDIR)/%--, $(addsuffix .pdf, $(EXTRAPDF))): %.tex $(patsubst %,TeXBuildDir,$(FORCE)) | TeXBuildDir
+# $(OUTDIR)/%.pdf is required for dependency tracking
+$(addprefix $(OUTDIR)/%--, $(addsuffix .pdf, $(EXTRAPDF))): %.tex $(OUTDIR)/%.pdf $(patsubst %,TeXBuildDir,$(FORCE)) | TeXBuildDir
 	rm -f "$@"
 	ln -sf `realpath "$(PWD)/$<"` "$(TEXBUILDDIR)/"
 	$(eval INPUTNAME := $(basename $(@F)))
