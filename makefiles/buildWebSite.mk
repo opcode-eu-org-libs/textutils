@@ -88,7 +88,7 @@ $(OUTDIR)/lib/highlight.css:
 $(addprefix $(OUTDIR)/lib/, $(SVGICONS)):
 	mkdir -p "$(@D)"
 	if [ -e "$(SVGICONSDIR)/$(@F)" ]; then \
-		ln -sf `realpath "$(SVGICONSDIR)/$(@F)"` "$@"; \
+		ln -sf "$$(realpath "$(SVGICONSDIR)/$(@F)")" "$@"; \
 	else \
 		wget -O "$@" "$(SVGICONURL)/$(@F)"; \
 	fi
@@ -96,7 +96,7 @@ $(addprefix $(OUTDIR)/lib/, $(SVGICONS)):
 # link „lib” files from $(LIBFILESDIR) to $(OUTDIR)/lib
 $(OUTDIR)/lib/%:
 	mkdir -p "$(@D)"
-	ln -sf `realpath "$(LIBFILESDIR)/$(@F)"` "$@"
+	ln -sf "$$(realpath "$(LIBFILESDIR)/$(@F)")" "$@"
 
 # generate .svg from gEDA .sch
 $(OUTDIR)/img/%.svg: $(IMGSRC)/%.sch
@@ -115,7 +115,7 @@ $(OUTDIR)/img/%.svg: $(IMGSRC)/%.tex | TeXBuildDir
 OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS))
 	if [ -d extra-web-files ]; then \
 		for f in extra-web-files/*; do \
-			if [ -e "$$f" ]; then ln -sf `realpath "$$f"` $(OUTDIR); fi; \
+			if [ -e "$$f" ]; then ln -sf "$$(realpath "$$f")" $(OUTDIR); fi; \
 		done \
 	fi
 
@@ -127,7 +127,7 @@ OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS))
 # link .tex and .cls „lib” files from $(LIBFILESDIR) to $(TEXBUILDDIR)
 $(TEXBUILDDIR)/%.tex $(TEXBUILDDIR)/%.cls:
 	mkdir -p $(TEXBUILDDIR)
-	ln -sf `realpath "$(LIBFILESDIR)/$(@F)"` "$@"
+	ln -sf "$$(realpath "$(LIBFILESDIR)/$(@F)")" "$@"
 
 # generate .pdf from gEDA .sch
 $(TEXBUILDDIR)/img/%.pdf: $(IMGSRC)/%.sch
@@ -145,7 +145,7 @@ TeXBuildDir: $(TEXBUILDDIR)/pdfBooklets.cls $(TEXBUILDDIR)/LaTeX-demos-examples.
 	mkdir -p $(OUTDIR)
 	if [ -d extra-tex-files ]; then \
 		for f in extra-tex-files/*; do \
-			if [ -e "$$f" ]; then ln -sf `realpath "$$f"` $(TEXBUILDDIR); fi; \
+			if [ -e "$$f" ]; then ln -sf "$$(realpath "$$f")" $(TEXBUILDDIR); fi; \
 		done \
 	fi
 
@@ -171,7 +171,7 @@ $(OUTDIR)/%.pdf: $(OUTDIR)/%.xhtml $(patsubst %,OutDir,$(FORCE)) | OutDir
 # build PDF from LaTeX
 $(OUTDIR)/%.pdf: %.tex $(patsubst %,TeXBuildDir,$(FORCE)) | TeXBuildDir
 	rm -f "$@"
-	ln -sf `realpath "$(PWD)/$<"` "$(TEXBUILDDIR)/"
+	ln -sf "$$(realpath "$(PWD)/$<")" "$(TEXBUILDDIR)/"
 	cd "$(TEXBUILDDIR)"; tex2pdf.sh "$<" "-shell-escape"
 	mv "$(TEXBUILDDIR)/$(@F)" "$@"
 
@@ -179,9 +179,9 @@ $(OUTDIR)/%.pdf: %.tex $(patsubst %,TeXBuildDir,$(FORCE)) | TeXBuildDir
 # $(OUTDIR)/%.pdf is required for dependency tracking
 $(addprefix $(OUTDIR)/%--, $(addsuffix .pdf, $(EXTRAPDF))): %.tex $(OUTDIR)/%.pdf $(patsubst %,TeXBuildDir,$(FORCE)) | TeXBuildDir
 	rm -f "$@"
-	ln -sf `realpath "$(PWD)/$<"` "$(TEXBUILDDIR)/"
+	ln -sf "$$(realpath "$(PWD)/$<")" "$(TEXBUILDDIR)/"
 	$(eval INPUTNAME := $(basename $(@F)))
-	INPUTNAME=$(INPUTNAME); ln -sf `realpath "$(LIBFILESDIR)/$${INPUTNAME#*--}-version.tex"` "$(TEXBUILDDIR)/$(INPUTNAME).tex";
+	INPUTNAME=$(INPUTNAME); ln -sf "$$(realpath "$(LIBFILESDIR)/$${INPUTNAME#*--}-version.tex")" "$(TEXBUILDDIR)/$(INPUTNAME).tex";
 	cd "$(TEXBUILDDIR)"; tex2pdf.sh "$(INPUTNAME).tex" "-shell-escape"
 	mv "$(TEXBUILDDIR)/$(@F)" "$@"
 
