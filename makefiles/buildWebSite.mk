@@ -110,6 +110,11 @@ $(OUTDIR)/img/%.svg: $(IMGSRC)/%.tex | TeXBuildDir
 	mkdir -p "$(@D)"
 	cd "$(TEXBUILDDIR)/$(FILEPATH)" && tex2svg.sh "$(PWD)/$<" "-shell-escape" && mv "$(@F)" "$@"
 
+# generate .svg from .gnuplot
+$(OUTDIR)/img/%.svg: $(IMGSRC)/%.gnuplot
+	mkdir -p "$(@D)"
+	cd "$(@D)"; gnuplot -p "$(PWD)/$<"
+
 # prepare $(OUTDIR) and link files from extra-web-files to $(OUTDIR)
 .PHONY: OutDir
 OutDir: $(addprefix $(OUTDIR)/lib/, highlight.css $(LIBFILES) $(SVGICONS))
@@ -138,6 +143,12 @@ $(TEXBUILDDIR)/img/%.pdf: $(IMGSRC)/%.sch
 $(TEXBUILDDIR)/img/%.pdf: $(IMGSRC)/%.svg
 	mkdir -p "$(@D)"
 	inkscape $^ --export-pdf=$@
+
+# generate .pdf from .gnuplot
+$(TEXBUILDDIR)/img/%.pdf: $(IMGSRC)/%.gnuplot
+	mkdir -p "$(@D)"
+	cd "$(@D)"; gnuplot -p "$(PWD)/$<"
+	inkscape $(basename $@).svg --export-pdf=$@
 
 # prepare $(TEXBUILDDIR) and link files from extra-tex-files to $(TEXBUILDDIR)
 .PHONY: TeXBuildDir
