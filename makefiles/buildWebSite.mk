@@ -40,7 +40,7 @@
 # all following variables can be override in parent Makefile by:
 #  override VARIABLE_NAME := new values
 
-LIBFILES   := base.css menu.css index.css menu.js opcode.svg webSite-OldOpCode.svg
+LIBFILES   := base.css menu.css index.css menu.js opcode.svg
 SVGICONS   := gitRepo.svg htmlFile.svg pdfFile.svg webSite.svg
 IMGSRC     := images-src
 EXTRAPDF   := teacher

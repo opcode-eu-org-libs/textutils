@@ -112,7 +112,10 @@ def addMathML(element):
 # add source code from external file and prepare highlight
 def addSourceCode(element, filePath=inputPath, useHighlight=True):
 	filename = element.attrib["file"]
-	ext = filename.rsplit(".",1)[1]
+	if "type" in element.attrib:
+		ext = element.attrib["type"]
+	else:
+		ext = filename.rsplit(".",1)[1]
 	
 	if ext == "sh":
 		ext = "bash"
