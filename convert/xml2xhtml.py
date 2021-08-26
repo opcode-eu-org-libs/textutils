@@ -148,7 +148,7 @@ def addSourceCode(element, filePath=inputPath, useHighlight=True):
 		element.text = srcTxt
 	
 	element.attrib.clear()
-	element.attrib['class'] = "ext pygments"
+	element.attrib['class'] = ext + " pygments"
 
 
 # prepare and generate Table Of Content
