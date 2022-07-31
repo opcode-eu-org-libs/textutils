@@ -156,7 +156,7 @@ TeXBuildDir: $(TEXBUILDDIR)/pdfBooklets.cls $(TEXBUILDDIR)/LaTeX-demos-examples.
 	mkdir -p $(OUTDIR)
 	if [ -d extra-tex-files ]; then \
 		for f in extra-tex-files/*; do \
-			if [ -e "$$f" ]; then ln -sf "$$(realpath "$$f")" $(TEXBUILDDIR); fi; \
+			if [ -e "$$f" ]; then ln -sfT "$$(realpath "$$f")" "$(TEXBUILDDIR)/$$(basename "$$f")"; fi; \
 		done \
 	fi
 
