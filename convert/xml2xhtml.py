@@ -44,7 +44,7 @@ from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 
 import latex2mathml.converter as MathConv
-MathConv.COMMANDS['\\sfrac'] = (2, 'mfrac', {'bevelled': 'true'})
+#MathConv.COMMANDS['\\sfrac'] = (2, 'mfrac', {'bevelled': 'true'})
 
 # command line arguments
 if len(sys.argv) != 3 or sys.argv[1] == "--help" or sys.argv[1] == "-h":

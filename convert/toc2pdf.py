@@ -86,8 +86,8 @@ tableOfContents(rootNode, 1)
 xml = xmlParser.ElementTree()
 rootNode = xml.parse( xmlFile )
 
-fonts = []
 pages = {}
+fonts = []
 xmlTagRegex = re.compile('<.*?>')
 spacesRegex = re.compile('[ \t\n]+')
 
@@ -100,16 +100,29 @@ for p in rootNode:
 			if e.tag == 'fontspec' and e.attrib['color'] == '#010101':
 				fonts.append(e.attrib['id'])
 		
+		# join all titles elements on single line
+		ptiles = {}
 		for e in p:
 			if e.tag == 'text' and e.attrib['font'] in fonts:
-				title = xmlParser.tostring(e, encoding="unicode")
-				title = xmlTagRegex.sub('', title)
-				title = spacesRegex.sub(' ', title)
-				title = title.strip()
-				if title in pages:
-					pages[title].append(pn)
-				else:
-					pages[title] = [ pn ]
+				line = e.attrib['top']
+				# get full tag, because text can be inside child tags
+				txt = xmlParser.tostring(e, encoding="unicode")
+				# normalise whitespaces
+				txt = spacesRegex.sub(' ', txt)
+				# strip before remove xml to protect potential spaces at begin/end title element
+				txt = txt.strip()
+				# remove xml tags
+				txt = xmlTagRegex.sub('', txt)
+				# concat all title element on line
+				ptiles[line] = ptiles.get(line, "") + txt
+		
+		# add all (joined) titles from actual page to `pages` dict
+		for l in ptiles:
+			title = ptiles[l]
+			if title in pages:
+				pages[title].append(pn)
+			else:
+				pages[title] = [ pn ]
 
 
 # add page numbers to TOC

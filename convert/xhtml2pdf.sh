@@ -53,7 +53,7 @@ else
 fi
 
 # create PDF
-wkhtmltopdf -s A4 -B 20 -T 20 -L 15 -R 20 $input $output
+wkhtmltopdf --enable-local-file-access -s A4 -B 20 -T 20 -L 15 -R 20 $input $output
 
 # prepare TOC as PDF bookmarks
 TMP1=`mktemp -t 'XXXXXXXXXXX.info'`
