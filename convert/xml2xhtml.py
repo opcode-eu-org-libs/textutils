@@ -108,21 +108,26 @@ def addMathML(element):
 	element.text = ""
 	element.append(mathML)
 
+# map filename_extention -> [pygments_lexer_name, display_name]
+extMap = {
+	"cpp": ["cpp", "C++"],
+	"c": ["c", "C"],
+	"py": ["python", "Python"],
+	"sh": ["bash", "Bash"],
+	"js": ["javascript", "JavaScript"],
+	"php": ["php", "PHP"],
+	"xml": ["xml", "XHTML+JavaScript"],
+}
 
 # add source code from external file and prepare highlight
 def addSourceCode(element, filePath=inputPath, useHighlight=True):
 	filename = element.attrib["file"]
 	if "type" in element.attrib:
-		ext = element.attrib["type"]
+		orgExt = element.attrib["type"]
 	else:
-		ext = filename.rsplit(".",1)[1]
+		orgExt = filename.rsplit(".",1)[1]
 	
-	if ext == "sh":
-		ext = "bash"
-	elif ext == "py":
-		ext = "python"
-	elif ext == "js":
-		ext = "javascript"
+	ext = extMap.get(orgExt, [orgExt, None])[0]
 	
 	srcFile = open(filePath + filename)
 	srcTxt = srcFile.read()
@@ -149,6 +154,7 @@ def addSourceCode(element, filePath=inputPath, useHighlight=True):
 	
 	element.attrib.clear()
 	element.attrib['class'] = ext + " pygments"
+	element.attrib['data-title'] = extMap.get(orgExt, [None, ext])[1]
 
 
 # prepare and generate Table Of Content
