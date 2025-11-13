@@ -45,28 +45,30 @@ if [ $# -ne 1 -a $# -ne 2 ]; then
 fi
 
 # get input and output filepaths
-input=$1
+input="$1"
 if [ $# -eq 2 ]; then
-	output=$2
+	output="$2"
 else
-	output=${input%.*}.pdf
+	output="${input%.*}.pdf"
 fi
 
 # create PDF
-wkhtmltopdf --enable-local-file-access -s A4 -B 20 -T 20 -L 15 -R 20 $input $output
+TMP_XHTML=$(realpath $(mktemp -p "`dirname "$input"`" -t 'XXXXXXXXXXX.xhtml')) # need be in the same directory as $input (due to relative links in html)
+TMP_PDF_OUT1=`mktemp -t 'XXXXXXXXXXX.pdf'`
+sed -e 's|</head>|<style> @page { margin: 0.3in 0.35in 0.3in 0.15in; size: 8.3in 11.7in; } h1, h2, h3, h4, h5, h6 { color: #020202; } </style></head>|' "$input" > "$TMP_XHTML"
+# backward compatibility: toc2pdf.py need titles color #010101 (this was title color in wkhtmltopdf output) ... chromium generate #010101 in pdf output from #020202 in html input
+chromium --headless --print-to-pdf="$TMP_PDF_OUT1" --no-pdf-header-footer -print-to-pdf-no-header "$TMP_XHTML"
 
 # prepare TOC as PDF bookmarks
-TMP1=`mktemp -t 'XXXXXXXXXXX.info'`
-pdftk $output dump_data > $TMP1
-pdftohtml -xml -i -stdout $output | python3 $SRCDIR/toc2pdf.py $input - >> $TMP1
-TMP2=`mktemp -t 'XXXXXXXXXXX.pdf'`
+TMP_TOC_DATA=`mktemp -t 'XXXXXXXXXXX.info'`
+pdftk $TMP_PDF_OUT1 dump_data > $TMP_TOC_DATA
+pdftohtml -xml -i -stdout $TMP_PDF_OUT1 | python3 $SRCDIR/toc2pdf.py "$input" - >> $TMP_TOC_DATA
 
 # add PDF bookmarks
-pdftk $output update_info $TMP1 output $TMP2
+pdftk "$TMP_PDF_OUT1" update_info $TMP_TOC_DATA output $output
 
-# move temporary file to output file path and fix permissions
-mv $TMP2 $output
-chmod `umask -S | tr -d 'x'` $output
+# fix permissions
+chmod `umask -S | tr -d 'x'` "$output"
 
 # cleanup
-rm $TMP1
+rm "$TMP_XHTML" $TMP_PDF_OUT1 $TMP_TOC_DATA
