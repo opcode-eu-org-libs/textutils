@@ -36,5 +36,4 @@ inputName=`basename $1 .tex`
 shift
 
 tex2pdf.sh "$inputPath" $@
-inkscape --without-gui --file=$inputName.pdf --export-plain-svg="$inputName.svg"
-inkscape --verb=FitCanvasToDrawing --verb=FileSave --verb=FileQuit "$inputName.svg"
+inkscape --without-gui --actions "fit-canvas-to-selection; select-all; export-filename:$inputName.svg; export-do;" $inputName.pdf
