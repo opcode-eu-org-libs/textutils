@@ -112,6 +112,7 @@ def addMathML(element):
 extMap = {
 	"cpp": ["cpp", "C++"],
 	"c": ["c", "C"],
+	"rs": ["rs", "Rust"],
 	"py": ["python", "Python"],
 	"sh": ["bash", "Bash"],
 	"js": ["javascript", "JavaScript"],
