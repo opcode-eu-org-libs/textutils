@@ -33,32 +33,32 @@ else:
 
 
 for l in f:
-	l, n = re.subn('^([^$]*)(\$[^$]*)\\\\([^$]*\$)', '\\1\\2@@%%@@\\3', l)
+	l, n = re.subn(r'^([^$]*)(\$[^$]*)\\([^$]*\$)', '\\1\\2@@%%@@\\3', l)
 	while n:
-		l, n = re.subn('^(([^$]*\$[^$]*\$[^$]*)*)(\$[^$]*)\\\\([^$]*\$)', '\\1\\3@@%%@@\\4', l)
-	l = re.sub('\\\\begin(\{.*?\})*', '', l)
-	l = re.sub('\\\\end\{.*?\}', '', l)
-	l = re.sub('\\\\label\{.*?\}', '', l)
+		l, n = re.subn(r'^(([^$]*\$[^$]*\$[^$]*)*)(\$[^$]*)\\([^$]*\$)', '\\1\\3@@%%@@\\4', l)
+	l = re.sub(r'\\begin(\{.*?\})*', '', l)
+	l = re.sub(r'\\end\{.*?\}', '', l)
+	l = re.sub(r'\\label\{.*?\}', '', l)
 	
-	l = re.sub('\\\\[a-z]*section\{(.*?)\}', '\\1', l)
-	l = re.sub('\\\\lstinline\{(.*?)\}', '\\1', l)
-	l = re.sub('\\\\lstinline@(.*?)@', '\\1', l)
-	l = re.sub('\\\\text..\{(.*?)\}', '\\1', l)
-	l = re.sub('\{\\\\it (.*?)\}', '\\1', l)
-	l = re.sub('\{\\\\bf (.*?)\}', '\\1', l)
-	l = re.sub('([^\\\\])~', '\\1 ', l)
+	l = re.sub(r'\\[a-z]*section\{(.*?)\}', '\\1', l)
+	l = re.sub(r'\\lstinline\{(.*?)\}', '\\1', l)
+	l = re.sub(r'\\lstinline@(.*?)@', '\\1', l)
+	l = re.sub(r'\\text..\{(.*?)\}', '\\1', l)
+	l = re.sub(r'\{\\it (.*?)\}', '\\1', l)
+	l = re.sub(r'\{\\bf (.*?)\}', '\\1', l)
+	l = re.sub(r'([^\\])~', '\\1 ', l)
 	
-	l = re.sub('\\\\.space\{.*?\}', '', l)
-	l = re.sub('\\\\itemsep\{.*?\}', '', l)
+	l = re.sub(r'\\.space\{.*?\}', '', l)
+	l = re.sub(r'\\itemsep\{.*?\}', '', l)
 	l = re.sub(',,', '', l)
 	l = re.sub("''", '', l)
 
-	l = re.sub('\\\\[\\\\a-zA-Z]+(\[.*?\])*', '', l)
+	l = re.sub(r'\\[\\a-zA-Z]+(\[.*?\])*', '', l)
 	l = re.sub('@@%%@@', '\\\\', l)
 	
-	l = re.sub('[  \t]+', ' ', l)
-	l = re.sub('^ ', '', l)
-	l = re.sub(' \n', '\n', l)
+	l = re.sub(r'[  \t]+', ' ', l)
+	l = re.sub(r'^ ', '', l)
+	l = re.sub(r' \n', '\n', l)
 	if l != '\n':
 		print(l, end="")
 
