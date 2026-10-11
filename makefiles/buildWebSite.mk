@@ -41,7 +41,7 @@
 #  override VARIABLE_NAME := new values
 
 LIBFILES   := base.css menu.css index.css menu.js tabs.js opcode.svg
-SVGICONS   := gitRepo.svg htmlFile.svg pdfFile.svg webSite.svg
+SVGICONS   := gitRepo.svg htmlFile.svg pdfFile.svg tarFile.svg webSite.svg
 IMGSRC     := images-src
 EXTRAPDF   := teacher
 

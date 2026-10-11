@@ -52,10 +52,14 @@ if sys.argv[1] == '-' and sys.argv[2] == '-':
 xhtmlFile = sys.stdin
 if sys.argv[1] != '-':
 	xhtmlFile = open(sys.argv[1], "r")
+else:
+	sys.argv[1] = "(standard input)"
 
 xmlFile = sys.stdin
 if sys.argv[2] != '-':
 	xmlFile = open(sys.argv[2], "r")
+else:
+	sys.argv[2] = "(standard input)"
 
 
 # get TOC from xhtml file
@@ -90,6 +94,7 @@ pages = {}
 fonts = []
 xmlTagRegex = re.compile('<.*?>')
 spacesRegex = re.compile('[ \t\n]+')
+ligature_map = str.maketrans({ 'ﬀ': 'ff', 'ﬁ': 'fi', 'ﬂ': 'fl', 'ﬃ': 'ffi', 'ﬄ': 'ffl', '﬇': 'st' })
 
 for p in rootNode:
 	if p.tag == 'page':
@@ -114,7 +119,7 @@ for p in rootNode:
 				# remove xml tags
 				txt = xmlTagRegex.sub('', txt)
 				# concat all title element on line
-				ptiles[line] = ptiles.get(line, "") + txt
+				ptiles[line] = ptiles.get(line, "") + txt.translate(ligature_map)
 		
 		# add all (joined) titles from actual page to `pages` dict
 		for l in ptiles:
@@ -132,7 +137,11 @@ for e in toc:
 	try:
 		pn = pages[title].pop(0)
 	except KeyError:
-		print(pages, file=sys.stderr)
+		print("")
+		print(f"PAGES (from {sys.argv[2]}):", pages, file=sys.stderr)
+		print("")
+		print(f"TOC (from {sys.argv[1]}):", toc, file=sys.stderr)
+		print("")
 		raise BaseException("Can't find page number for: " + title)
 	e.append(pn)
 
