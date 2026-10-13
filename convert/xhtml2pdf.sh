@@ -53,7 +53,7 @@ else
 fi
 
 # create PDF
-TMP_XHTML=$(realpath $(mktemp -p "`dirname "$input"`" -t 'XXXXXXXXXXX.xhtml')) # need be in the same directory as $input (due to relative links in html)
+TMP_XHTML=$(realpath $(export -n TMPDIR; mktemp -p "`dirname "$input"`" -t 'XXXXXXXXXXX.xhtml')) # need be in the same directory as $input (due to relative links in html)
 TMP_PDF_OUT1=`mktemp -t 'XXXXXXXXXXX.pdf'`
 sed -e 's|</head>|<style> @page { margin: 0.3in 0.35in 0.3in 0.15in; size: 8.3in 11.7in; } h1, h2, h3, h4, h5, h6 { color: #020202; } </style></head>|' "$input" > "$TMP_XHTML"
 # backward compatibility: toc2pdf.py need titles color #010101 (this was title color in wkhtmltopdf output) ... chromium generate #010101 in pdf output from #020202 in html input
