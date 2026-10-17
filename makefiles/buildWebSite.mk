@@ -45,10 +45,6 @@ SVGICONS   := gitRepo.svg htmlFile.svg pdfFile.svg tarFile.svg webSite.svg
 IMGSRC     := images-src
 EXTRAPDF   := teacher
 
-# add converting scripts from TextUtils to PATH
-TEXTUTILS  := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
-export PATH := $(TEXTUTILS)/convert:$(PATH)
-
 
 #
 # buils all .xml and .tex files in current dir by default

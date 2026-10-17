@@ -21,10 +21,13 @@
 # SOFTWARE.
 
 BINDIR=/usr/local/bin
+SHAREDIR=/usr/local/share/TextUtils
+
+.PHONY: help installTools installDependencies
 
 help:
 	@ echo "USAGE: sudo make installTools"
-	@ echo "   or:      make installTools BINDIR=~/mybin"
+	@ echo "   or:      make installTools BINDIR=~/mybin SHAREDIR=~/myshare"
 	@ echo "USAGE: sudo make installDependencies"
 	@ echo ""
 	@ echo "Install dir for:"
@@ -37,6 +40,7 @@ installTools:
 	install -Dt $(BINDIR) convert/*
 	install -Dt $(BINDIR) misc/*
 	install -Dt $(BINDIR) compare/*
+	install -Dt $(SHAREDIR) -m 644 makefiles/*
 
 
 CONVERT_DEP_PKGS=python3-pygments python3  chromium pdftk poppler-utils  texlive-latex-base texlive-luatex texlive-latex-recommended
